@@ -1,0 +1,375 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status Peminjaman - LabMate</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 24px;
+            background: linear-gradient(135deg, #f3eaff, #e8f3ff);
+            font-family: Arial, sans-serif;
+            color: #263b66;
+        }
+
+        .status-container {
+            width: 100%;
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .status-header,
+        .table-container,
+        .summary-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(81, 99, 160, 0.1);
+        }
+
+        .status-header {
+            padding: 24px;
+            margin-bottom: 22px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 22px;
+            color: #6878ed;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .status-header h1 {
+            margin: 0 0 10px;
+            font-size: 28px;
+        }
+
+        .status-header p {
+            color: #8790a5;
+            line-height: 1.6;
+        }
+
+        .action-link {
+            display: inline-block;
+            margin-top: 8px;
+            color: #6878ed;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .status-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .summary-card {
+            padding: 22px;
+        }
+
+        .summary-card p {
+            margin: 0 0 10px;
+            color: #8790a5;
+            font-size: 14px;
+        }
+
+        .summary-card h2 {
+            margin: 0;
+            color: #6878ed;
+            font-size: 28px;
+        }
+
+        .table-container {
+            padding: 24px;
+            overflow-x: auto;
+        }
+
+        .table-container h2 {
+            margin: 0 0 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th,
+        td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #edf0f7;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        th {
+            color: #737e98;
+            background: #f8f9ff;
+        }
+
+        .badge-status {
+            display: inline-block;
+            padding: 7px 11px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .menunggu {
+            color: #956000;
+            background: #fff1cb;
+        }
+
+        .disetujui {
+            color: #18794e;
+            background: #dff8e9;
+        }
+
+        .ditolak {
+            color: #b42318;
+            background: #fee4e2;
+        }
+
+        .empty-message {
+            padding: 24px;
+            text-align: center;
+            color: #8790a5;
+        }
+
+        .note {
+            margin-top: 22px;
+            color: #8790a5;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        @media (max-width: 650px) {
+            body {
+                padding: 12px;
+            }
+
+            .status-summary {
+                grid-template-columns: 1fr;
+            }
+
+            .status-header,
+            .table-container {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="status-container">
+
+        <a href="dashboard.html" class="back-link">
+            ← Kembali ke Dashboard
+        </a>
+
+        <section class="status-header">
+            <h1>Status Peminjaman 📋</h1>
+
+            <p>
+                Pantau pengajuan peminjaman alat laboratorium
+                melalui halaman ini.
+            </p>
+
+            <a href="peminjaman.html" class="action-link">
+                + Ajukan Peminjaman Baru
+            </a>
+        </section>
+
+        <section class="status-summary">
+            <div class="summary-card">
+                <p>Total Pengajuan</p>
+                <h2 id="total">0</h2>
+            </div>
+
+            <div class="summary-card">
+                <p>Menunggu</p>
+                <h2 id="pending">0</h2>
+            </div>
+
+            <div class="summary-card">
+                <p>Disetujui</p>
+                <h2 id="approved">0</h2>
+            </div>
+        </section>
+
+        <section class="table-container">
+            <h2>Riwayat Pengajuan</h2>
+
+            <div id="history">
+                <p class="empty-message">
+                    Memuat data pengajuan...
+                </p>
+            </div>
+
+            <p class="note">
+                Catatan: data demo disimpan di browser,
+                belum terhubung ke database Laravel.
+            </p>
+        </section>
+
+    </main>
+
+    <script>
+        // PENTING:
+        // Harus sama dengan penyimpanan di peminjaman.html
+        // dan laboran.html.
+        const STORAGE_KEY = "labBorrowData";
+
+        function ambilDataPeminjaman() {
+            try {
+                const data = JSON.parse(
+                    localStorage.getItem(STORAGE_KEY) || "[]"
+                );
+
+                return Array.isArray(data) ? data : [];
+            } catch (error) {
+                console.error(
+                    "Gagal membaca data peminjaman:",
+                    error
+                );
+
+                return [];
+            }
+        }
+
+        function formatTanggal(nilai) {
+            if (!nilai) return "-";
+
+            return nilai;
+        }
+
+        function tampilkanStatus() {
+            const data = ambilDataPeminjaman();
+
+            const statusMenunggu = [
+                "Menunggu",
+                "Menunggu persetujuan"
+            ];
+
+            const statusDisetujui = "Disetujui";
+
+            document.getElementById("total").textContent =
+                data.length;
+
+            document.getElementById("pending").textContent =
+                data.filter(item =>
+                    statusMenunggu.includes(item.status)
+                ).length;
+
+            document.getElementById("approved").textContent =
+                data.filter(item =>
+                    item.status === statusDisetujui
+                ).length;
+
+            const history = document.getElementById("history");
+            history.replaceChildren();
+
+            if (data.length === 0) {
+                const pesan = document.createElement("p");
+
+                pesan.className = "empty-message";
+                pesan.textContent =
+                    "Belum ada data pengajuan peminjaman.";
+
+                history.appendChild(pesan);
+                return;
+            }
+
+            const table = document.createElement("table");
+
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Nama</th>
+                        <th>Kelas</th>
+                        <th>Alat</th>
+                        <th>Jumlah</th>
+                        <th>Tanggal Pinjam</th>
+                        <th>Tanggal Kembali</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            `;
+
+            const tbody = table.querySelector("tbody");
+
+            data.forEach(item => {
+                const tr = document.createElement("tr");
+
+                const kolom = [
+                    item.nama || "-",
+                    item.kelas || "-",
+                    item.alat || "-",
+                    item.jumlah ?? "-",
+                    formatTanggal(
+                        item.tanggal || item.tanggal_pinjam
+                    ),
+                    formatTanggal(
+                        item.pengembalian || item.tanggal_kembali
+                    )
+                ];
+
+                kolom.forEach(nilai => {
+                    const td = document.createElement("td");
+
+                    td.textContent = nilai;
+                    tr.appendChild(td);
+                });
+
+                const statusTd = document.createElement("td");
+                const badge = document.createElement("span");
+
+                const status = item.status || "Menunggu";
+
+                badge.textContent = status;
+                badge.className = "badge-status";
+
+                if (statusMenunggu.includes(status)) {
+                    badge.classList.add("menunggu");
+                } else if (status === "Disetujui") {
+                    badge.classList.add("disetujui");
+                } else if (status === "Ditolak") {
+                    badge.classList.add("ditolak");
+                } else {
+                    badge.classList.add("menunggu");
+                }
+
+                statusTd.appendChild(badge);
+                tr.appendChild(statusTd);
+                tbody.appendChild(tr);
+            });
+
+            history.appendChild(table);
+        }
+
+        // Tampilkan data saat halaman dibuka.
+        tampilkanStatus();
+
+        // Perbarui jika data berubah dari tab lain
+        // dengan origin browser yang sama.
+        window.addEventListener("storage", function(event) {
+            if (
+                event.key === STORAGE_KEY ||
+                event.key === null
+            ) {
+                tampilkanStatus();
+            }
+        });
+    </script>
+</body>
+</html>

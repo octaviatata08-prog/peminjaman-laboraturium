@@ -1,0 +1,328 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Peminjaman - LabMate</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .report {
+            width: 100%;
+            max-width: 1050px;
+            margin: auto;
+        }
+
+        .topbar, .panel, .summary {
+            padding: 22px;
+            margin-bottom: 22px;
+            border-radius: 18px;
+            background: white;
+            box-shadow: 0 8px 28px rgba(81, 99, 160, .1);
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .topbar h2 {
+            color: #6878ed;
+        }
+
+        a {
+            color: #6878ed;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        h1 {
+            margin: 24px 0 8px;
+        }
+
+        .subtitle {
+            margin-bottom: 24px;
+            color: #8790a5;
+            line-height: 1.6;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 22px;
+        }
+
+        .summary p {
+            margin-bottom: 10px;
+            color: #8790a5;
+            font-size: 14px;
+        }
+
+        .summary h2 {
+            color: #6878ed;
+            font-size: 27px;
+        }
+
+        .panel h2 {
+            margin-bottom: 18px;
+        }
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .filters input, .filters select {
+            flex: 1;
+            min-width: 160px;
+            padding: 12px;
+            border: 1px solid #dfe4f0;
+            border-radius: 10px;
+            background: #f9faff;
+        }
+
+        .action-btn {
+            padding: 11px 15px;
+            border: none;
+            border-radius: 10px;
+            background: #6878ed;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #edf0f7;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        th {
+            color: #737e98;
+            background: #f8f9ff;
+        }
+
+        .empty {
+            padding: 24px;
+            text-align: center;
+            color: #8790a5;
+        }
+
+        .note {
+            margin-top: 16px;
+            color: #8790a5;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 750px) {
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media print {
+            body {
+                display: block;
+                padding: 0;
+                background: white;
+            }
+
+            .topbar a, .filters, .note {
+                display: none;
+            }
+
+            .topbar, .panel, .summary {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="report">
+        <nav class="topbar">
+            <h2>⚗ LabMate</h2>
+            <a href="laboran.html">← Dashboard Laboran</a>
+        </nav>
+
+        <h1>Laporan Peminjaman 📊</h1>
+        <p class="subtitle">
+            Lihat rekap pengajuan peminjaman alat laboratorium.
+        </p>
+
+        <section class="summary-grid">
+            <div class="summary">
+                <p>Total Pengajuan</p>
+                <h2 id="total">0</h2>
+            </div>
+            <div class="summary">
+                <p>Menunggu</p>
+                <h2 id="pending">0</h2>
+            </div>
+            <div class="summary">
+                <p>Disetujui</p>
+                <h2 id="approved">0</h2>
+            </div>
+            <div class="summary">
+                <p>Ditolak</p>
+                <h2 id="rejected">0</h2>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Rekap Data Peminjaman</h2>
+
+            <div class="filters">
+                <input
+                    type="search"
+                    id="search"
+                    placeholder="Cari nama atau alat..."
+                    aria-label="Cari nama peminjam atau alat"
+                >
+
+                <select id="filterStatus" aria-label="Filter status">
+                    <option value="">Semua Status</option>
+                    <option value="Menunggu">Menunggu</option>
+                    <option value="Disetujui">Disetujui</option>
+                    <option value="Ditolak">Ditolak</option>
+                </select>
+
+                <button class="action-btn" onclick="window.print()">
+                    Cetak Laporan
+                </button>
+            </div>
+
+            <div class="table-wrap" id="tableArea"></div>
+
+            <p class="note">
+                Laporan ini menggunakan data demo dari localStorage browser,
+                bukan data database asli.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        function bacaData() {
+            try {
+                const data = JSON.parse(
+                    localStorage.getItem("LabMateData") || "[]"
+                );
+                return Array.isArray(data) ? data : [];
+            } catch {
+                return [];
+            }
+        }
+
+        function tampilkanLaporan() {
+            const semuaData = bacaData();
+
+            document.getElementById("total").textContent = semuaData.length;
+            document.getElementById("pending").textContent =
+                semuaData.filter(x => x.status === "Menunggu").length;
+            document.getElementById("approved").textContent =
+                semuaData.filter(x => x.status === "Disetujui").length;
+            document.getElementById("rejected").textContent =
+                semuaData.filter(x => x.status === "Ditolak").length;
+
+            const keyword = document.getElementById("search")
+                .value.trim().toLowerCase();
+            const status = document.getElementById("filterStatus").value;
+
+            const hasil = semuaData.filter(item => {
+                const cocokKata =
+                    String(item.nama || "").toLowerCase().includes(keyword) ||
+                    String(item.alat || "").toLowerCase().includes(keyword);
+
+                const cocokStatus = !status || item.status === status;
+
+                return cocokKata && cocokStatus;
+            });
+
+            const area = document.getElementById("tableArea");
+            area.replaceChildren();
+
+            if (hasil.length === 0) {
+                const pesan = document.createElement("p");
+                pesan.className = "empty";
+                pesan.textContent = "Tidak ada data yang cocok.";
+                area.appendChild(pesan);
+                return;
+            }
+
+            const tabel = document.createElement("table");
+            tabel.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Nama Peminjam</th>
+                        <th>Kelas</th>
+                        <th>Nama Alat</th>
+                        <th>Jumlah</th>
+                        <th>Tanggal Pinjam</th>
+                        <th>Tanggal Kembali</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            `;
+
+            const tbody = tabel.querySelector("tbody");
+
+            hasil.forEach((item, index) => {
+                const tr = document.createElement("tr");
+
+                [
+                    index + 1,
+                    item.nama,
+                    item.kelas,
+                    item.alat,
+                    item.jumlah,
+                    item.tanggal,
+                    item.pengembalian,
+                    item.status
+                ].forEach(nilai => {
+                    const td = document.createElement("td");
+                    td.textContent = nilai ?? "-";
+                    tr.appendChild(td);
+                });
+
+                tbody.appendChild(tr);
+            });
+
+            area.appendChild(tabel);
+        }
+
+        document.getElementById("search")
+            .addEventListener("input", tampilkanLaporan);
+
+        document.getElementById("filterStatus")
+            .addEventListener("change", tampilkanLaporan);
+
+        tampilkanLaporan();
+    </script>
+</body>
+</html>

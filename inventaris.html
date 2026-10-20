@@ -1,0 +1,381 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventaris Alat - LabMate</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .inventory {
+            width: 100%;
+            max-width: 1050px;
+            margin: auto;
+        }
+
+        .topbar, .panel, .form-panel {
+            padding: 24px;
+            margin-bottom: 22px;
+            border-radius: 20px;
+            background: white;
+            box-shadow: 0 10px 30px rgba(81, 99, 160, 0.1);
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .topbar h2 {
+            color: #6878ed;
+        }
+
+        a {
+            color: #6878ed;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        h1 {
+            margin: 24px 0 8px;
+        }
+
+        .subtitle {
+            margin-bottom: 24px;
+            color: #8790a5;
+            line-height: 1.6;
+        }
+
+        .form-panel h2, .panel h2 {
+            margin-bottom: 18px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .field input, .field select {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #dfe4f0;
+            border-radius: 11px;
+            background: #f9faff;
+            outline: none;
+        }
+
+        .field input:focus, .field select:focus {
+            border-color: #8175ed;
+        }
+
+        .primary-btn, .delete-btn {
+            padding: 11px 15px;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .primary-btn {
+            margin-top: 18px;
+            background: linear-gradient(100deg, #637cf5, #986ce8);
+        }
+
+        .delete-btn {
+            background: #e05252;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #edf0f7;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        th {
+            color: #737e98;
+            background: #f8f9ff;
+        }
+
+        .empty {
+            padding: 24px;
+            color: #8790a5;
+            text-align: center;
+        }
+
+        .note {
+            margin-top: 18px;
+            color: #8790a5;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar, .panel, .form-panel {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="inventory">
+        <nav class="topbar">
+            <h2>⚗ LabMate</h2>
+            <a href="laboran.html">← Dashboard Laboran</a>
+        </nav>
+
+        <h1>Inventaris Alat 🔬</h1>
+        <p class="subtitle">
+            Kelola daftar alat dan jumlah stok laboratorium.
+        </p>
+
+        <section class="form-panel">
+            <h2>Tambah Alat Baru</h2>
+
+            <form id="inventoryForm">
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="namaAlat">Nama Alat</label>
+                        <input
+                            type="text"
+                            id="namaAlat"
+                            placeholder="Contoh: Mikroskop"
+                            required
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label for="kategori">Kategori</label>
+                        <select id="kategori" required>
+                            <option value="">-- Pilih kategori --</option>
+                            <option value="Biologi">Biologi</option>
+                            <option value="Kimia">Kimia</option>
+                            <option value="Fisika">Fisika</option>
+                            <option value="Umum">Umum</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="stok">Jumlah Stok</label>
+                        <input
+                            type="number"
+                            id="stok"
+                            min="0"
+                            max="10000"
+                            value="1"
+                            required
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label for="kondisi">Kondisi Alat</label>
+                        <select id="kondisi" required>
+                            <option value="Baik">Baik</option>
+                            <option value="Perlu Perbaikan">Perlu Perbaikan</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="primary-btn">
+                    + Tambah Alat
+                </button>
+            </form>
+        </section>
+
+        <section class="panel">
+            <h2>Daftar Inventaris</h2>
+            <div class="table-wrap" id="inventoryTable"></div>
+
+            <p class="note">
+                Prototipe demo: data inventaris tersimpan di browser ini,
+                belum terhubung ke database aplikasi.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const STORAGE_KEY = "labMateInventory";
+
+        const alatAwal = [
+            {
+                nama: "Mikroskop",
+                kategori: "Biologi",
+                stok: 4,
+                kondisi: "Baik"
+            },
+            {
+                nama: "Gelas Ukur",
+                kategori: "Kimia",
+                stok: 10,
+                kondisi: "Baik"
+            },
+            {
+                nama: "Termometer",
+                kategori: "Fisika",
+                stok: 6,
+                kondisi: "Baik"
+            }
+        ];
+
+        function bacaInventaris() {
+            const tersimpan = localStorage.getItem(STORAGE_KEY);
+
+            if (tersimpan === null) {
+                localStorage.setItem(
+                    STORAGE_KEY,
+                    JSON.stringify(alatAwal)
+                );
+
+                return [...alatAwal];
+            }
+
+            try {
+                const data = JSON.parse(tersimpan);
+                return Array.isArray(data) ? data : [];
+            } catch {
+                return [];
+            }
+        }
+
+        function simpanInventaris(data) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        function tampilkanInventaris() {
+            const data = bacaInventaris();
+            const area = document.getElementById("inventoryTable");
+            area.replaceChildren();
+
+            if (data.length === 0) {
+                const pesan = document.createElement("p");
+                pesan.className = "empty";
+                pesan.textContent = "Belum ada alat dalam inventaris.";
+                area.appendChild(pesan);
+                return;
+            }
+
+            const tabel = document.createElement("table");
+            tabel.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Nama Alat</th>
+                        <th>Kategori</th>
+                        <th>Stok</th>
+                        <th>Kondisi</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            `;
+
+            const tbody = tabel.querySelector("tbody");
+
+            data.forEach((alat, index) => {
+                const tr = document.createElement("tr");
+
+                [
+                    index + 1,
+                    alat.nama,
+                    alat.kategori,
+                    alat.stok,
+                    alat.kondisi
+                ].forEach(nilai => {
+                    const td = document.createElement("td");
+                    td.textContent = nilai;
+                    tr.appendChild(td);
+                });
+
+                const aksiTd = document.createElement("td");
+                const hapusBtn = document.createElement("button");
+
+                hapusBtn.className = "delete-btn";
+                hapusBtn.textContent = "Hapus";
+
+                hapusBtn.addEventListener("click", () => {
+                    const yakin = confirm(
+                        `Yakin ingin menghapus ${alat.nama} dari inventaris demo?`
+                    );
+
+                    if (!yakin) return;
+
+                    const dataTerbaru = bacaInventaris();
+                    dataTerbaru.splice(index, 1);
+                    simpanInventaris(dataTerbaru);
+                    tampilkanInventaris();
+                });
+
+                aksiTd.appendChild(hapusBtn);
+                tr.appendChild(aksiTd);
+                tbody.appendChild(tr);
+            });
+
+            area.appendChild(tabel);
+        }
+
+        document.getElementById("inventoryForm")
+            .addEventListener("submit", function(event) {
+                event.preventDefault();
+
+                const nama = document.getElementById("namaAlat")
+                    .value.trim();
+
+                const kategori = document.getElementById("kategori").value;
+                const stok = Number(document.getElementById("stok").value);
+                const kondisi = document.getElementById("kondisi").value;
+
+                if (!nama || !kategori || !Number.isInteger(stok) ||
+                    stok < 0 || stok > 10000) {
+                    alert("Periksa kembali data alat yang kamu masukkan.");
+                    return;
+                }
+
+                const data = bacaInventaris();
+                const sudahAda = data.some(
+                    alat => alat.nama.toLowerCase() === nama.toLowerCase()
+                );
+
+                if (sudahAda) {
+                    alert("Nama alat tersebut sudah ada di inventaris.");
+                    return;
+                }
+
+                data.push({ nama, kategori, stok, kondisi });
+                simpanInventaris(data);
+                tampilkanInventaris();
+                this.reset();
+
+                alert("Alat berhasil ditambahkan ke inventaris demo!");
+            });
+
+        tampilkanInventaris();
+    </script>
+</body>
+</html>

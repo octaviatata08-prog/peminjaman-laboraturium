@@ -1,0 +1,470 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengajuan Peminjaman - LabMate</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .borrow-container {
+            width: calc(100% - 60px);
+            max-width: 760px;
+            margin: 30px auto;
+            padding: 30px;
+            border-radius: 24px;
+            background: white;
+            box-shadow: 0 20px 50px rgba(81, 99, 160, .12);
+            box-sizing: border-box;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 24px;
+            color: #6878ed;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            font-size: 28px;
+            color: #263b66;
+        }
+
+        .description {
+            margin-bottom: 28px;
+            color: #8790a5;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #263b66;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #dfe4f0;
+            border-radius: 11px;
+            background: #f9faff;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #8175ed;
+            box-shadow: 0 0 0 3px rgba(129, 117, 237, .1);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .stock-info {
+            display: block;
+            margin-top: 7px;
+            color: #6878ed;
+            font-size: 12px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .form-actions button,
+        .form-actions a {
+            box-sizing: border-box;
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 11px;
+            text-align: center;
+            text-decoration: none;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            color: white;
+            background: linear-gradient(100deg, #637cf5, #986ce8);
+        }
+
+        .submit-btn:hover {
+            opacity: .9;
+        }
+
+        .cancel-btn {
+            color: #6878ed;
+            background: #eeedff;
+        }
+
+        .notice {
+            margin-top: 22px;
+            padding: 14px;
+            border-radius: 12px;
+            background: #f0f3ff;
+            color: #6878ed;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .empty-message {
+            margin: 8px 0;
+            color: #d9534f;
+            font-size: 13px;
+        }
+
+        @media (max-width: 500px) {
+            .borrow-container {
+                width: calc(100% - 24px);
+                padding: 22px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<main class="borrow-container">
+    <a href="dashboard.html" class="back-link">
+        ← Kembali ke Dashboard
+    </a>
+
+    <h1>Formulir Peminjaman 📋</h1>
+    <p class="description">
+        Isi data berikut dengan benar untuk mengajukan peminjaman
+        alat laboratorium.
+    </p>
+
+    <form id="borrowForm">
+        <div class="form-group">
+            <label for="nama">Nama Peminjam</label>
+            <input type="text" id="nama"
+                   placeholder="Masukkan nama lengkap" required>
+        </div>
+
+        <div class="form-group">
+            <label for="kelas">Kelas</label>
+            <input type="text" id="kelas"
+                   placeholder="Contoh: XII RPL 1" required>
+        </div>
+
+        <div class="form-group">
+            <label for="alat">Pilih Alat</label>
+            <select id="alat" required>
+                <option value="">Memuat inventaris...</option>
+            </select>
+            <small id="stockInfo" class="stock-info">
+                Pilih alat untuk melihat stok.
+            </small>
+            <p id="inventoryMessage" class="empty-message" hidden></p>
+        </div>
+
+        <div class="form-group">
+            <label for="jumlah">Jumlah Alat</label>
+            <input type="number" id="jumlah"
+                   min="1" value="1" required>
+        </div>
+
+        <div class="form-group">
+            <label for="tanggal">Tanggal Peminjaman</label>
+            <input type="date" id="tanggal" required>
+        </div>
+
+        <div class="form-group">
+            <label for="pengembalian">Rencana Tanggal Pengembalian</label>
+            <input type="date" id="pengembalian" required>
+        </div>
+
+        <div class="form-group">
+            <label for="keperluan">Keperluan Peminjaman</label>
+            <textarea id="keperluan"
+                      placeholder="Jelaskan tujuan peminjaman alat"
+                      required></textarea>
+        </div>
+
+        <div class="form-actions">
+            <a href="dashboard.html" class="cancel-btn">Batal</a>
+            <button type="submit" class="submit-btn">
+                Ajukan Peminjaman
+            </button>
+        </div>
+    </form>
+
+    <div class="notice">
+        ℹ️ Pengajuan akan berstatus menunggu persetujuan laboran.
+        Data demo tersimpan di browser, belum terhubung ke database Laravel.
+    </div>
+</main>
+
+<script>
+    const form = document.getElementById("borrowForm");
+    const selectAlat = document.getElementById("alat");
+    const inputJumlah = document.getElementById("jumlah");
+    const tanggal = document.getElementById("tanggal");
+    const pengembalian = document.getElementById("pengembalian");
+    const stockInfo = document.getElementById("stockInfo");
+    const inventoryMessage = document.getElementById("inventoryMessage");
+
+    let inventaris = [];
+
+    function bacaArray(key) {
+        try {
+            const data = JSON.parse(localStorage.getItem(key) || "[]");
+            return Array.isArray(data) ? data : [];
+        } catch (error) {
+            console.error("Gagal membaca " + key, error);
+            return [];
+        }
+    }
+
+    function angka(value) {
+        const hasil = Number(value);
+        return Number.isFinite(hasil) && hasil >= 0 ? hasil : 0;
+    }
+
+    function namaAlat(item) {
+        return String(item.nama || item.nama_alat || item.alat || "").trim();
+    }
+
+    function stokAlat(item) {
+        return angka(item.stok ?? item.jumlah ?? item.stock ?? 0);
+    }
+
+    function alatTersedia(item) {
+        const kondisi = String(item.kondisi || "Baik").toLowerCase();
+        return !["rusak", "tidak layak", "nonaktif"].includes(kondisi);
+    }
+
+    function muatInventaris() {
+        inventaris = bacaArray("labBorrowInventory");
+
+        // Jika key inventaris berbeda atau belum ada, jangan
+        // diam-diam mengarang daftar alat baru.
+        selectAlat.innerHTML =
+            '<option value="">-- Pilih alat laboratorium --</option>';
+
+        const alatValid = inventaris.filter(item =>
+            namaAlat(item) && alatTersedia(item)
+        );
+
+        if (alatValid.length === 0) {
+            inventoryMessage.hidden = false;
+            inventoryMessage.textContent =
+                "Inventaris belum ditemukan. Pastikan data sudah disimpan di halaman inventaris.";
+            stockInfo.textContent = "Tidak ada alat yang dapat dipilih.";
+            return;
+        }
+
+        inventoryMessage.hidden = true;
+
+        alatValid.forEach(item => {
+            const nama = namaAlat(item);
+            const stok = stokAlat(item);
+
+            const option = document.createElement("option");
+            option.value = nama;
+            option.textContent = nama + " (stok: " + stok + ")";
+            option.disabled = stok < 1;
+            selectAlat.appendChild(option);
+        });
+
+        const alatDipilih =
+            localStorage.getItem("labMateSelected") ||
+            localStorage.getItem("labBorrowSelected");
+
+        if (alatDipilih) {
+            const cocok = [...selectAlat.options].find(
+                option => option.value === alatDipilih && !option.disabled
+            );
+
+            if (cocok) selectAlat.value = alatDipilih;
+
+            localStorage.removeItem("labMateSelected");
+            localStorage.removeItem("labBorrowSelected");
+        }
+
+        perbaruiStok();
+    }
+
+    function perbaruiStok() {
+        const nama = selectAlat.value;
+        const item = inventaris.find(
+            alat => namaAlat(alat) === nama
+        );
+
+        if (!item) {
+            stockInfo.textContent = "Pilih alat untuk melihat stok.";
+            inputJumlah.max = "";
+            return;
+        }
+
+        const stok = stokAlat(item);
+        const sedangMenunggu = bacaArray("labBorrowData")
+            .filter(data =>
+                data.alat === nama &&
+                ["Menunggu", "Menunggu persetujuan"].includes(data.status)
+            )
+            .reduce((total, data) => total + angka(data.jumlah), 0);
+
+        const tersedia = Math.max(0, stok - sedangMenunggu);
+
+        stockInfo.textContent = "Stok: " + stok +
+            " | Pengajuan menunggu: " + sedangMenunggu +
+            " | Tersedia: " + tersedia;
+
+        inputJumlah.max = tersedia || 1;
+
+        if (tersedia < 1) {
+            stockInfo.textContent += " — stok sedang tidak tersedia.";
+        }
+
+        if (Number(inputJumlah.value) > tersedia) {
+            inputJumlah.value = tersedia > 0 ? tersedia : 1;
+        }
+    }
+
+    function tanggalHariIni() {
+        const sekarang = new Date();
+        const tahun = sekarang.getFullYear();
+        const bulan = String(sekarang.getMonth() + 1).padStart(2, "0");
+        const hari = String(sekarang.getDate()).padStart(2, "0");
+        return `${tahun}-${bulan}-${hari}`;
+    }
+
+    const hariIni = tanggalHariIni();
+    tanggal.min = hariIni;
+    pengembalian.min = hariIni;
+
+    selectAlat.addEventListener("change", perbaruiStok);
+
+    tanggal.addEventListener("change", function () {
+        pengembalian.min = tanggal.value || hariIni;
+
+        if (pengembalian.value && pengembalian.value < tanggal.value) {
+            pengembalian.value = "";
+        }
+    });
+
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const nama = document.getElementById("nama").value.trim();
+        const kelas = document.getElementById("kelas").value.trim();
+        const alat = selectAlat.value;
+        const jumlah = Number(inputJumlah.value);
+        const tglPinjam = tanggal.value;
+        const tglKembali = pengembalian.value;
+        const keperluan = document.getElementById("keperluan").value.trim();
+
+        const item = inventaris.find(
+            data => namaAlat(data) === alat
+        );
+
+        if (!item) {
+            alert("Pilih alat yang tersedia dari inventaris.");
+            return;
+        }
+
+        if (!nama || !kelas || !alat || !keperluan) {
+            alert("Pastikan semua data sudah diisi.");
+            return;
+        }
+
+        if (!Number.isInteger(jumlah) || jumlah < 1) {
+            alert("Jumlah alat minimal 1.");
+            return;
+        }
+
+        if (!tglPinjam || !tglKembali || tglKembali < tglPinjam) {
+            alert("Tanggal pengembalian tidak boleh sebelum tanggal peminjaman.");
+            return;
+        }
+
+        const stok = stokAlat(item);
+
+        const dataLama = bacaArray("labBorrowData");
+
+        const sedangMenunggu = dataLama
+            .filter(data =>
+                data.alat === alat &&
+                ["Menunggu", "Menunggu persetujuan"].includes(data.status)
+            )
+            .reduce((total, data) => total + angka(data.jumlah), 0);
+
+        const tersedia = Math.max(0, stok - sedangMenunggu);
+
+        if (jumlah > tersedia) {
+            alert("Stok alat yang tersedia hanya " + tersedia + ".");
+            perbaruiStok();
+            return;
+        }
+
+        const dataPeminjaman = {
+            id: Date.now(),
+            nama: nama,
+            kelas: kelas,
+            alat: alat,
+            jumlah: jumlah,
+            tanggal: tglPinjam,
+            pengembalian: tglKembali,
+            keperluan: keperluan,
+            status: "Menunggu persetujuan"
+        };
+
+        dataLama.push(dataPeminjaman);
+
+        try {
+            localStorage.setItem("labBorrowData", JSON.stringify(dataLama));
+
+            alert(
+                "Pengajuan berhasil disimpan! 🎉\n\n" +
+                "Nama: " + nama + "\n" +
+                "Alat: " + alat + "\n" +
+                "Jumlah: " + jumlah + "\n" +
+                "Status: Menunggu persetujuan"
+            );
+
+            window.location.href = "status.html";
+        } catch (error) {
+            console.error(error);
+            alert("Pengajuan gagal disimpan. Periksa penyimpanan browser.");
+        }
+    });
+
+    muatInventaris();
+
+    // Perbarui daftar jika inventaris diubah dari tab lain.
+    window.addEventListener("storage", function (event) {
+        if (event.key === "labBorrowInventory" ||
+            event.key === "labBorrowData") {
+            muatInventaris();
+        }
+    });
+</script>
+</body>
+</html>

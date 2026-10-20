@@ -1,0 +1,574 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Laboran - LabMate</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 24px;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f3eaff, #e8f3ff);
+            font-family: Arial, sans-serif;
+            color: #263b66;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto 24px;
+            padding: 16px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 8px 25px rgba(81, 99, 160, .1);
+        }
+
+        .brand {
+            color: #6878ed;
+            font-size: 24px;
+            font-weight: 800;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .nav-links a {
+            display: inline-block;
+            padding: 11px 15px;
+            border-radius: 11px;
+            color: #6878ed;
+            background: #f0edff;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: .2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: white;
+            background: linear-gradient(100deg, #637cf5, #986ce8);
+        }
+
+        /* KONTEN */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-card,
+        .summary-card,
+        .table-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(81, 99, 160, .1);
+        }
+
+        .header-card {
+            padding: 28px;
+            margin-bottom: 22px;
+        }
+
+        .header-card h1 {
+            margin: 0 0 10px;
+            font-size: 28px;
+        }
+
+        .header-card p {
+            margin: 0;
+            color: #8790a5;
+            line-height: 1.7;
+        }
+
+        /* RINGKASAN */
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 22px;
+        }
+
+        .summary-card {
+            padding: 24px;
+        }
+
+        .summary-card p {
+            margin: 0 0 12px;
+            color: #8790a5;
+            font-size: 14px;
+        }
+
+        .summary-card h2 {
+            margin: 0;
+            color: #6878ed;
+            font-size: 32px;
+        }
+
+        /* TABEL */
+        .table-card {
+            padding: 26px;
+        }
+
+        .table-card h2 {
+            margin: 0 0 22px;
+            font-size: 22px;
+        }
+
+        .table-scroll {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 850px;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th,
+        td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #edf0f7;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        th {
+            color: #737e98;
+            background: #f8f9ff;
+        }
+
+        tbody tr:hover {
+            background: #fafaff;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 7px 11px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .waiting {
+            color: #956000;
+            background: #fff1cb;
+        }
+
+        .approved {
+            color: #18794e;
+            background: #dff8e9;
+        }
+
+        .rejected {
+            color: #b42318;
+            background: #fee4e2;
+        }
+
+        .btn {
+            border: none;
+            padding: 10px 13px;
+            margin: 3px 2px;
+            border-radius: 9px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .btn:hover {
+            opacity: .85;
+            transform: translateY(-1px);
+        }
+
+        .btn-approve {
+            color: white;
+            background: #22a06b;
+        }
+
+        .btn-reject {
+            color: white;
+            background: #e55353;
+        }
+
+        .processed {
+            color: #8790a5;
+            font-size: 12px;
+        }
+
+        .empty-message {
+            padding: 30px 15px;
+            color: #8790a5;
+            text-align: center;
+        }
+
+        .notice {
+            margin: 22px 0 0;
+            color: #8790a5;
+            font-size: 12px;
+            line-height: 1.7;
+            text-align: center;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 800px) {
+            body {
+                padding: 14px;
+            }
+
+            .navbar {
+                align-items: flex-start;
+                flex-direction: column;
+                padding: 18px;
+            }
+
+            .nav-links {
+                justify-content: flex-start;
+                width: 100%;
+            }
+
+            .summary {
+                grid-template-columns: 1fr;
+            }
+
+            .header-card,
+            .table-card {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-links a {
+                padding: 10px;
+                font-size: 12px;
+            }
+
+            .header-card h1 {
+                font-size: 23px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a href="laboran.html" class="brand">⚗ LabMate</a>
+
+        <div class="nav-links">
+            <a href="laboran.html" class="active">Dashboard Laboran</a>
+            <a href="inventaris.html">Kelola Inventaris</a>
+            <a href="laporan.html">Laporan</a>
+            <a href="index.html" id="logoutLink">Keluar</a>
+        </div>
+    </nav>
+
+    <!-- DASHBOARD -->
+    <main class="container">
+
+        <section class="header-card">
+            <h1>Dashboard Laboran 👩‍🔬</h1>
+            <p>
+                Kelola pengajuan peminjaman alat laboratorium siswa.
+                Periksa pengajuan, lalu setujui atau tolak.
+            </p>
+        </section>
+
+        <!-- RINGKASAN -->
+        <section class="summary">
+            <div class="summary-card">
+                <p>Total Pengajuan</p>
+                <h2 id="total">0</h2>
+            </div>
+
+            <div class="summary-card">
+                <p>Menunggu</p>
+                <h2 id="pending">0</h2>
+            </div>
+
+            <div class="summary-card">
+                <p>Disetujui</p>
+                <h2 id="approved">0</h2>
+            </div>
+        </section>
+
+        <!-- DAFTAR PENGAJUAN -->
+        <section class="table-card">
+            <h2>Daftar Pengajuan Siswa</h2>
+
+            <div class="table-scroll" id="tableArea">
+                <p class="empty-message">
+                    Memuat data pengajuan...
+                </p>
+            </div>
+
+            <p class="notice">
+                Prototipe demo: data tersimpan di localStorage browser,
+                belum terhubung ke database Laravel.
+            </p>
+        </section>
+
+    </main>
+
+    <script>
+        const STORAGE_KEY = "labBorrowData";
+
+        const STATUS_MENUNGGU = [
+            "Menunggu",
+            "Menunggu persetujuan"
+        ];
+
+        // Membaca pengajuan dari penyimpanan yang sama
+        // dengan halaman peminjaman.html dan status.html.
+        function ambilData() {
+            try {
+                const data = JSON.parse(
+                    localStorage.getItem(STORAGE_KEY) || "[]"
+                );
+
+                return Array.isArray(data) ? data : [];
+            } catch (error) {
+                console.error("Gagal membaca data:", error);
+                return [];
+            }
+        }
+
+        function simpanData(data) {
+            localStorage.setItem(
+                STORAGE_KEY,
+                JSON.stringify(data)
+            );
+        }
+
+        function buatSel(nilai) {
+            const td = document.createElement("td");
+            td.textContent = nilai ?? "-";
+            return td;
+        }
+
+        function buatBadge(status) {
+            const badge = document.createElement("span");
+            badge.className = "badge";
+            badge.textContent = status;
+
+            if (STATUS_MENUNGGU.includes(status)) {
+                badge.classList.add("waiting");
+            } else if (status === "Disetujui") {
+                badge.classList.add("approved");
+            } else if (status === "Ditolak") {
+                badge.classList.add("rejected");
+            }
+
+            return badge;
+        }
+
+        // Menyetujui atau menolak pengajuan.
+        function ubahStatus(id, statusBaru) {
+            const data = ambilData();
+
+            const index = data.findIndex(
+                item => String(item.id) === String(id)
+            );
+
+            if (index === -1) {
+                alert(
+                    "Pengajuan tidak ditemukan. " +
+                    "Pastikan halaman memakai penyimpanan browser yang sama."
+                );
+                tampilkanData();
+                return;
+            }
+
+            if (!STATUS_MENUNGGU.includes(data[index].status)) {
+                alert("Pengajuan ini sudah diproses.");
+                tampilkanData();
+                return;
+            }
+
+            const nama = data[index].nama || "siswa";
+            const alat = data[index].alat || "alat";
+
+            const yakin = confirm(
+                "Yakin ingin " + statusBaru.toLowerCase() +
+                " pengajuan " + nama + " untuk " + alat + "?"
+            );
+
+            if (!yakin) return;
+
+            data[index].status = statusBaru;
+
+            try {
+                simpanData(data);
+                tampilkanData();
+
+                alert(
+                    "Pengajuan " + nama +
+                    " berhasil diubah menjadi " + statusBaru + "."
+                );
+            } catch (error) {
+                console.error(error);
+                alert("Perubahan gagal disimpan.");
+            }
+        }
+
+        // Menampilkan data dan tombol tindakan.
+        function tampilkanData() {
+            const data = ambilData();
+
+            document.getElementById("total").textContent =
+                data.length;
+
+            document.getElementById("pending").textContent =
+                data.filter(item =>
+                    STATUS_MENUNGGU.includes(item.status)
+                ).length;
+
+            document.getElementById("approved").textContent =
+                data.filter(item =>
+                    item.status === "Disetujui"
+                ).length;
+
+            const area = document.getElementById("tableArea");
+            area.replaceChildren();
+
+            if (data.length === 0) {
+                const pesan = document.createElement("p");
+                pesan.className = "empty-message";
+                pesan.textContent =
+                    "Belum ada pengajuan peminjaman.";
+                area.appendChild(pesan);
+                return;
+            }
+
+            const table = document.createElement("table");
+
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Nama</th>
+                        <th>Kelas</th>
+                        <th>Alat</th>
+                        <th>Jumlah</th>
+                        <th>Tanggal Pinjam</th>
+                        <th>Tanggal Kembali</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            `;
+
+            const tbody = table.querySelector("tbody");
+
+            data.forEach(item => {
+                const tr = document.createElement("tr");
+
+                tr.appendChild(buatSel(item.nama || "-"));
+                tr.appendChild(buatSel(item.kelas || "-"));
+                tr.appendChild(buatSel(item.alat || "-"));
+                tr.appendChild(buatSel(item.jumlah ?? "-"));
+
+                tr.appendChild(
+                    buatSel(item.tanggal || item.tanggal_pinjam || "-")
+                );
+
+                tr.appendChild(
+                    buatSel(
+                        item.pengembalian ||
+                        item.tanggal_kembali ||
+                        "-"
+                    )
+                );
+
+                const statusTd = document.createElement("td");
+                statusTd.appendChild(
+                    buatBadge(item.status || "Menunggu")
+                );
+                tr.appendChild(statusTd);
+
+                const aksiTd = document.createElement("td");
+
+                if (STATUS_MENUNGGU.includes(item.status)) {
+                    const setujui = document.createElement("button");
+                    setujui.type = "button";
+                    setujui.className = "btn btn-approve";
+                    setujui.textContent = "Setujui";
+
+                    setujui.addEventListener("click", () => {
+                        ubahStatus(item.id, "Disetujui");
+                    });
+
+                    const tolak = document.createElement("button");
+                    tolak.type = "button";
+                    tolak.className = "btn btn-reject";
+                    tolak.textContent = "Tolak";
+
+                    tolak.addEventListener("click", () => {
+                        ubahStatus(item.id, "Ditolak");
+                    });
+
+                    aksiTd.append(setujui, tolak);
+                } else {
+                    const sudah = document.createElement("span");
+                    sudah.className = "processed";
+                    sudah.textContent = "Sudah diproses";
+                    aksiTd.appendChild(sudah);
+                }
+
+                tr.appendChild(aksiTd);
+                tbody.appendChild(tr);
+            });
+
+            area.appendChild(table);
+        }
+
+        // Konfirmasi sebelum kembali ke halaman login.
+        document.getElementById("logoutLink").addEventListener(
+            "click",
+            function(event) {
+                const yakin = confirm("Yakin ingin keluar?");
+                if (!yakin) {
+                    event.preventDefault();
+                }
+            }
+        );
+
+        // Jalankan saat halaman dibuka.
+        tampilkanData();
+
+        // Sinkronkan tampilan jika tab lain mengubah data.
+        window.addEventListener("storage", function(event) {
+            if (
+                event.key === STORAGE_KEY ||
+                event.key === null
+            ) {
+                tampilkanData();
+            }
+        });
+    </script>
+
+</body>
+</html>

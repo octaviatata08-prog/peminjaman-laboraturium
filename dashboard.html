@@ -1,0 +1,385 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - LabMate</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .dashboard {
+            width: 100%;
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 30px;
+            padding: 20px 26px;
+            border-radius: 18px;
+            background: white;
+            box-shadow: 0 8px 30px #637cf51a;
+        }
+
+        .navbar h2 {
+            color: #6878ed;
+            font-size: 22px;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .nav-links a {
+            padding: 10px 14px;
+            border-radius: 10px;
+            background: #eeedff;
+            color: #6878ed;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .welcome {
+            margin-bottom: 28px;
+            padding: 32px;
+            border-radius: 22px;
+            color: white;
+            background: linear-gradient(130deg, #637cf5, #986ce8);
+        }
+
+        .welcome h1 {
+            margin-bottom: 10px;
+            font-size: 30px;
+        }
+
+        .welcome p {
+            line-height: 1.7;
+            color: #f0edff;
+        }
+
+        .welcome-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 22px;
+        }
+
+        .welcome-actions a {
+            padding: 12px 17px;
+            border-radius: 11px;
+            background: white;
+            color: #6878ed;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-bottom: 35px;
+        }
+
+        .stat-card {
+            padding: 24px;
+            border: 1px solid #edf0fa;
+            border-radius: 18px;
+            background: white;
+            box-shadow: 0 8px 30px #637cf51a;
+        }
+
+        .stat-card p {
+            margin-bottom: 12px;
+            color: #8790a5;
+        }
+
+        .stat-card h2 {
+            color: #6878ed;
+            font-size: 30px;
+        }
+
+        .section-heading {
+            margin-bottom: 18px;
+        }
+
+        .equipment-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .equipment-card {
+            padding: 24px;
+            border: 1px solid #edf0fa;
+            border-radius: 18px;
+            background: white;
+            box-shadow: 0 8px 30px #637cf51a;
+        }
+
+        .equipment-icon {
+            display: grid;
+            width: 55px;
+            height: 55px;
+            margin-bottom: 18px;
+            place-items: center;
+            border-radius: 15px;
+            background: #eeedff;
+            font-size: 28px;
+        }
+
+        .equipment-card h3 {
+            margin-bottom: 8px;
+        }
+
+        .equipment-card p {
+            min-height: 44px;
+            margin-bottom: 16px;
+            color: #8790a5;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .available {
+            display: inline-block;
+            margin-bottom: 18px;
+            padding: 7px 10px;
+            border-radius: 20px;
+            background: #e3f9ee;
+            color: #198754;
+            font-size: 12px;
+        }
+
+        .borrow-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 11px;
+            color: white;
+            background: linear-gradient(100deg, #637cf5, #986ce8);
+            font-size: 14px;
+            font-weight: 700;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .footer {
+            padding: 28px 10px 8px;
+            color: #8790a5;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        @media (max-width: 750px) {
+            .stats,
+            .equipment-list {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome {
+                padding: 24px;
+            }
+
+            .welcome h1 {
+                font-size: 25px;
+            }
+
+            .navbar {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="dashboard">
+
+        <nav class="navbar">
+            <h2>⚗ LabMate</h2>
+
+            <div class="nav-links">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="status.html">Status Peminjaman</a>
+                <a href="index.html" id="logoutBtn">Keluar</a>
+            </div>
+        </nav>
+
+        <section class="welcome">
+            <h1>Halo, Siswa! 👋</h1>
+            <p>
+                Selamat datang di LabMate. Cari alat laboratorium,
+                ajukan peminjaman, dan pantau status pengajuanmu
+                melalui satu halaman.
+            </p>
+
+            <div class="welcome-actions">
+                <a href="peminjaman.html">+ Ajukan Peminjaman</a>
+                <a href="status.html">📋 Lihat Status</a>
+            </div>
+        </section>
+
+        <section class="stats">
+            <article class="stat-card">
+                <p>Total Jenis Alat</p>
+                <h2 id="totalAlat">3</h2>
+            </article>
+
+            <article class="stat-card">
+                <p>Alat Tersedia</p>
+                <h2 id="alatTersedia">3</h2>
+            </article>
+
+            <article class="stat-card">
+                <p>Peminjaman Saya</p>
+                <h2 id="totalPinjam">0</h2>
+            </article>
+        </section>
+
+        <h2 class="section-heading">Daftar Alat Laboratorium 🔬</h2>
+
+        <section class="equipment-list" id="equipmentList"></section>
+
+        <footer class="footer">
+            © 2026 LabMate — Sistem Informasi Peminjaman Laboratorium
+        </footer>
+    </main>
+
+    <script>
+        const inventarisKey = "labMateInventory";
+        const peminjamanKey = "labMateData";
+
+        const alatDefault = [
+            {
+                nama: "Mikroskop",
+                kategori: "Biologi",
+                stok: 4,
+                kondisi: "Baik",
+                ikon: "🔬",
+                deskripsi: "Mengamati objek berukuran sangat kecil."
+            },
+            {
+                nama: "Gelas Ukur",
+                kategori: "Kimia",
+                stok: 10,
+                kondisi: "Baik",
+                ikon: "⚗️",
+                deskripsi: "Mengukur volume cairan dalam praktikum."
+            },
+            {
+                nama: "Termometer",
+                kategori: "Fisika",
+                stok: 6,
+                kondisi: "Baik",
+                ikon: "🌡️",
+                deskripsi: "Mengukur suhu dalam kegiatan praktikum."
+            }
+        ];
+
+        function bacaJSON(key, fallback = []) {
+            try {
+                const hasil = JSON.parse(localStorage.getItem(key));
+                return Array.isArray(hasil) ? hasil : fallback;
+            } catch {
+                return fallback;
+            }
+        }
+
+        function tampilkanAlat() {
+            const inventarisTersimpan = localStorage.getItem(inventarisKey);
+            let inventaris;
+
+            if (inventarisTersimpan === null) {
+                inventaris = alatDefault;
+                localStorage.setItem(
+                    inventarisKey,
+                    JSON.stringify(inventaris)
+                );
+            } else {
+                inventaris = bacaJSON(inventarisKey);
+            }
+
+            const peminjaman = bacaJSON(peminjamanKey);
+            const area = document.getElementById("equipmentList");
+
+            area.replaceChildren();
+
+            document.getElementById("totalAlat").textContent =
+                inventaris.length;
+
+            document.getElementById("alatTersedia").textContent =
+                inventaris.filter(
+                    alat => alat.kondisi === "Baik" && Number(alat.stok) > 0
+                ).length;
+
+            document.getElementById("totalPinjam").textContent =
+                peminjaman.length;
+
+            inventaris.forEach(alat => {
+                const kartu = document.createElement("article");
+                kartu.className = "equipment-card";
+
+                const ikon = document.createElement("div");
+                ikon.className = "equipment-icon";
+                ikon.textContent = alat.ikon || "🧪";
+
+                const judul = document.createElement("h3");
+                judul.textContent = alat.nama;
+
+                const deskripsi = document.createElement("p");
+                deskripsi.textContent =
+                    alat.deskripsi || "Alat laboratorium untuk kegiatan praktikum.";
+
+                const stok = document.createElement("span");
+                stok.className = "available";
+                stok.textContent = "Stok: " + alat.stok + " unit";
+
+                const tombol = document.createElement("a");
+                tombol.className = "borrow-btn";
+                tombol.href = "peminjaman.html";
+                tombol.textContent =
+                    Number(alat.stok) > 0 && alat.kondisi === "Baik"
+                        ? "Ajukan Peminjaman"
+                        : "Stok Tidak Tersedia";
+
+                if (Number(alat.stok) <= 0 || alat.kondisi !== "Baik") {
+                    tombol.style.opacity = "0.55";
+                    tombol.addEventListener("click", event => {
+                        event.preventDefault();
+                        alert("Alat ini sedang tidak tersedia.");
+                    });
+                } else {
+                    tombol.addEventListener("click", () => {
+                        localStorage.setItem("labMateSelected", alat.nama);
+                    });
+                }
+
+                kartu.append(ikon, judul, deskripsi, stok, tombol);
+                area.appendChild(kartu);
+            });
+
+            if (inventaris.length === 0) {
+                const pesan = document.createElement("p");
+                pesan.textContent = "Belum ada alat di inventaris.";
+                area.appendChild(pesan);
+            }
+        }
+
+        document.getElementById("logoutBtn").addEventListener("click", () => {
+            // Prototipe demo: belum menggunakan autentikasi sungguhan.
+        });
+
+        tampilkanAlat();
+    </script>
+</body>
+</html>
